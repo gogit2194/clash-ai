@@ -75,43 +75,23 @@ void loop() {
   value2 = analogRead(joyPin2);
 
   Serial.printf("%d\t%d",value1,value2);
-
-
-  if (value1 >= 615 && value1 <= 950) {
+  
+  int diff = value1 - 512
+  if (diff < -50) {
     Steps2Take  = - STEPS_PER_OUTPUT_REVOLUTION / 200;  // Rotate CCW
-    small_stepper.setSpeed(350);
-    small_stepper.step(Steps2Take);
-    fill_solid(leds,NUM_LEDS,CRGB::Red);
-    FastLED.show();
-
-  }
-  if (value1 > 950) {
-    Steps2Take  = - STEPS_PER_OUTPUT_REVOLUTION / 50;  // Rotate CW
-    small_stepper.setSpeed(700);
-    small_stepper.step(Steps2Take);
+    small_stepper.setSpeed(-value1/512);
+    small_stepper.step(-1);
     fill_solid(leds,NUM_LEDS,CRGB::Red);
     FastLED.show();
   }
-  if (value1 <= 410 && value1 >= 60) {
-    Steps2Take  = STEPS_PER_OUTPUT_REVOLUTION / 200;  // Rotate CW
-    small_stepper.setSpeed(350);
-    small_stepper.step(Steps2Take);
-    fill_solid(leds,NUM_LEDS,CRGB::Blue);
+  else if (diff > 50) {
+    small_stepper.setSpeed(diff/512); 					// Rotate CW
+    small_stepper.step(1);
+    fill_solid(leds,NUM_LEDS,CRGB::Red);
     FastLED.show();
-
   }
-  if (value1 < 110) {
-    Steps2Take  = STEPS_PER_OUTPUT_REVOLUTION / 50;  // Rotate CW
-    small_stepper.setSpeed(700);
-    small_stepper.step(Steps2Take);
-    fill_solid(leds,NUM_LEDS,CRGB::Blue);
-    FastLED.show();
-
-  }
-
   else {
     fill_solid(leds,NUM_LEDS,CRGB::Black);
     FastLED.show();
-
   }
 }
