@@ -74,18 +74,21 @@ void loop() {
   value1 = analogRead(joyPin1);
   value2 = analogRead(joyPin2);
 
-  Serial.printf("%d\t%d",value1,value2);
+  Serial.print(value1);
+  Serial.print("\t");
+  Serial.print(value2);
   
-  int diff = value1 - 512
+  int diff  = value1 - 512;
+  int speed = diff/512*700;
+  
   if (diff < -50) {
-    Steps2Take  = - STEPS_PER_OUTPUT_REVOLUTION / 200;  // Rotate CCW
-    small_stepper.setSpeed(-value1/512);
+    small_stepper.setSpeed(-speed);		// Rotate CCW
     small_stepper.step(-1);
     fill_solid(leds,NUM_LEDS,CRGB::Red);
     FastLED.show();
   }
   else if (diff > 50) {
-    small_stepper.setSpeed(diff/512); 					// Rotate CW
+    small_stepper.setSpeed(speed); 			// Rotate CW
     small_stepper.step(1);
     fill_solid(leds,NUM_LEDS,CRGB::Red);
     FastLED.show();
