@@ -1,37 +1,33 @@
 /* Read Jostick
    ------------
-
    Reads two analog pins that are supposed to be
    connected to a jostick made of two potentiometers
-
    We send three bytes back to the comp: one header and two
    with data as signed bytes, this will take the form:
        Jxy\r\n
-
    x and y are integers and sent in ASCII
-
    http://www.0j0.org | http://arduino.berlios.de
    copyleft 2005 DojoDave for DojoCorp
 */
 
 /*-----( Import needed libraries )-----*/
 #include <Stepper.h>
-#include <Servo.h>  
+#include <Servo.h>
 #include <FastLED.h>
 
 Servo servo;
 
 /*-----( Declare Constants, Pin Numbers )-----*/
 
-int joyPin1 	= A0;       // slider variable connecetd to analog pin 0
-int joyPin2 	= A1;       // slider variable connecetd to analog pin 1
-int buttonPin 	= 2;     	// the number of the joystick button pin
-int servoPin 	= 5;
+int joyPin1   = A0;       // slider variable connecetd to analog pin 0
+int joyPin2   = A1;       // slider variable connecetd to analog pin 1
+int buttonPin   = 2;      // the number of the joystick button pin
+int servoPin  = 5;
 
-int value1 		= 0;   		// variable to read the value from the analog pin 0
-int value2 		= 0;        // variable to read the value from the analog pin 1
+int value1    = 0;      // variable to read the value from the analog pin 0
+int value2    = 0;        // variable to read the value from the analog pin 1
 int buttonState = 0;         // variable for reading the joystick button status
-int servoAngle 	= 0;  	 	// servo position in degrees
+int servoAngle  = 0;      // servo position in degrees
 
 
 //---( Number of steps per revolution of INTERNAL motor in 4-step mode )---
@@ -62,11 +58,14 @@ int treatValue(int data) {
 void loop() {
 
   buttonState = digitalRead(buttonPin);
-  if (buttonState == LOW) {			// Button pushed
-    servo.write(85);      			// Turn SG90 servo Left to 45 degrees
+  if (buttonState == LOW) {     // Button pushed
+    servo.write(85);            // Turn SG90 servo Left to 45 degrees
     Serial.print("Down\t");
-  } else {							// Button not pushed
-    servo.write(115);      			// Turn SG90 servo back to 90 degrees
+    fill_solid(leds, NUM_LEDS, CRGB::Green);
+    FastLED.show();
+  } else {              // Button not pushed
+
+    servo.write(115);           // Turn SG90 servo back to 90 degrees
     Serial.print("Up\t");
   }
 
@@ -76,25 +75,42 @@ void loop() {
 
   Serial.print(value1);
   Serial.print("\t");
-  Serial.print(value2);
-  
-  int diff  = value1 - 512;
-  int speed = diff/512*700;
-  
-  if (diff < -50) {
-    small_stepper.setSpeed(-speed);		// Rotate CCW
-    small_stepper.step(-1);
-    fill_solid(leds,NUM_LEDS,CRGB::Red);
+  Serial.println(value2);
+
+  if (value1 >= 615 && value1 <= 950) {
+    Steps2Take  = - STEPS_PER_OUTPUT_REVOLUTION / 200;  // Rotate CCW
+    small_stepper.setSpeed(350);
+    small_stepper.step(Steps2Take);
+    FastLED.setBrightness(50);
+    fill_solid(leds, NUM_LEDS, CRGB::Red);
     FastLED.show();
   }
-  else if (diff > 50) {
-    small_stepper.setSpeed(speed); 			// Rotate CW
-    small_stepper.step(1);
-    fill_solid(leds,NUM_LEDS,CRGB::Red);
+  else if (value1 > 950) {
+    Steps2Take  = - STEPS_PER_OUTPUT_REVOLUTION / 200;  // Rotate CW
+    small_stepper.setSpeed(700);
+    small_stepper.step(Steps2Take);
+    FastLED.setBrightness(255);
+    fill_solid(leds, NUM_LEDS, CRGB::Red);
     FastLED.show();
   }
-  else {
-    fill_solid(leds,NUM_LEDS,CRGB::Black);
+  else if (value1 <= 410 && value1 >= 60) {
+    Steps2Take  = STEPS_PER_OUTPUT_REVOLUTION / 200;  // Rotate CW
+    small_stepper.setSpeed(350);
+    small_stepper.step(Steps2Take);
+    FastLED.setBrightness(50);
+    fill_solid(leds, NUM_LEDS, CRGB::Blue);
+    FastLED.show();
+  }
+  else if (value1 < 110) {
+    Steps2Take  = STEPS_PER_OUTPUT_REVOLUTION / 200;  // Rotate CW
+    small_stepper.setSpeed(700);
+    small_stepper.step(Steps2Take);
+    FastLED.setBrightness(255);
+    fill_solid(leds, NUM_LEDS, CRGB::Blue);
+    FastLED.show();
+  }
+  else if (value1 > 410 && value1 < 615) {
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
     FastLED.show();
   }
 }
