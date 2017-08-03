@@ -28,7 +28,7 @@ int value1    = 0;      // variable to read the value from the analog pin 0
 int value2    = 0;        // variable to read the value from the analog pin 1
 int buttonState = 0;         // variable for reading the joystick button status
 int servoAngle  = 0;      // servo position in degrees
-
+int buttonWas	= 1;
 
 //---( Number of steps per revolution of INTERNAL motor in 4-step mode )---
 #define STEPS_PER_MOTOR_REVOLUTION 32
@@ -58,12 +58,12 @@ int treatValue(int data) {
 void loop() {
 
   buttonState = digitalRead(buttonPin);
-  if (buttonState == LOW) {     // Button pushed
+  if (buttonState == LOW && buttonWas == 1) {     // Button pushed
     servo.write(85);            // Turn SG90 servo Left to 45 degrees
     Serial.print("Down\t");
     fill_solid(leds, NUM_LEDS, CRGB::Green);
     FastLED.show();
-  } else {              // Button not pushed
+  } else if(buttonWas == 0){              // Button not pushed
 
     servo.write(115);           // Turn SG90 servo back to 90 degrees
     Serial.print("Up\t");
