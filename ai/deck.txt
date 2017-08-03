@@ -1,0 +1,8 @@
+knight,4
+giant,2
+musketeer,3
+arrows,4
+goblins,4
+fireball,2
+bomber,4
+spear-goblin,4
